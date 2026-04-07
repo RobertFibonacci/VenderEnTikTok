@@ -66,7 +66,8 @@
 
         .bg-star { position: absolute; color: var(--action-cyan); animation: starTwinkle 3s ease-in-out infinite; z-index: 0; pointer-events: none; }
         
-        #safe-zone { position: absolute; top: 15%; bottom: 35%; left: 5%; right: 25%; pointer-events: none; z-index: 0; }
+        /* Modificado top: 25% para bajar las animaciones y no interferir con el nuevo encabezado más grande */
+        #safe-zone { position: absolute; top: 25%; bottom: 35%; left: 5%; right: 25%; pointer-events: none; z-index: 0; }
         
         .text-bubble { position: absolute; opacity: 0; color: black; background: white; padding: 6px 12px; border-radius: 16px; font-size: 11px; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.5); animation: textFade 16s ease-in-out infinite; }
         .bg-icon { position: absolute; opacity: 0; color: white; animation: iconFade 12s ease-in-out infinite; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
@@ -112,11 +113,10 @@
             <div class="bg-icon top-[50%] left-[70%]" style="animation-delay: 11s;"><svg class="w-7 h-7" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg></div>
         </div>
 
-        <!-- TOP BAR -->
-        <div class="flex justify-between items-center px-4 py-6 z-10 absolute top-0 w-full" id="top-bar">
-            <div class="text-lg font-bold tracking-wide flex space-x-4 mx-auto drop-shadow-md">
-                <span class="text-gray-400">Siguiendo</span>
-                <span class="text-white border-b-2 border-white pb-1">Para ti</span>
+        <!-- TOP BAR (ENCABEZADO NUEVO) -->
+        <div class="flex justify-between items-start px-4 py-5 z-10 absolute top-0 w-full" id="top-bar">
+            <div class="text-xl md:text-2xl font-bold tracking-tight text-center text-white drop-shadow-lg leading-snug mx-auto bg-black/60 backdrop-blur-md p-5 rounded-xl border border-white/20 shadow-xl">
+                Convierte tus visualizaciones en clientes listos para pagar, sin tener que grabar docenas de videos diarios ni perseguir prospectos...
             </div>
         </div>
 
