@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Test de 2 Minutos: Clientes Perdidos</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #000000;
+            color: #ffffff;
+            -webkit-tap-highlight-color: transparent;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --action-cyan: #25F4EE;
+            --action-red: #FE2C55;
+            --bg-dark: #010101;
+        }
+
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        .slide-up { animation: slideUp 0.5s ease-out forwards; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        /* Fondo animado inicial */
+        @keyframes textFade {
+            0% { opacity: 0; transform: translateY(10px); }
+            10% { opacity: 1; transform: translateY(0); }      
+            30% { opacity: 1; transform: translateY(-5px); }     
+            45% { opacity: 0; transform: translateY(-15px); }    
+            100% { opacity: 0; transform: translateY(-15px); }   
+        }
+        @keyframes iconFade {
+            0% { opacity: 0; transform: scale(0.9); }
+            15% { opacity: 0.6; transform: scale(1); }
+            30% { opacity: 0.6; transform: scale(1.05); }
+            45% { opacity: 0; transform: scale(0.95); }
+            100% { opacity: 0; transform: scale(0.95); }
+        }
+        @keyframes starTwinkle {
+            0%, 100% { opacity: 0.15; transform: scale(0.8); filter: drop-shadow(0 0 2px rgba(37,244,238,0.5)); }
+            50% { opacity: 0.5; transform: scale(1.2); filter: drop-shadow(0 0 8px rgba(37,244,238,0.8)); }
+        }
+
+        /* Animaciones Mapa Interactivo */
+        @keyframes pulse-border-cyan {
+            0% { box-shadow: 0 0 0 0 rgba(37, 244, 238, 0.6); }
+            70% { box-shadow: 0 0 0 12px rgba(37, 244, 238, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(37, 244, 238, 0); }
+        }
+        @keyframes pulse-border-red {
+            0% { box-shadow: 0 0 0 0 rgba(254, 44, 85, 0.6); }
+            70% { box-shadow: 0 0 0 15px rgba(254, 44, 85, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(254, 44, 85, 0); }
+        }
+        .pulse-cyan { animation: pulse-border-cyan 1.5s infinite; }
+        .pulse-red { animation: pulse-border-red 1.5s infinite; }
+
+        .bg-star { position: absolute; color: var(--action-cyan); animation: starTwinkle 3s ease-in-out infinite; z-index: 0; pointer-events: none; }
+        
+        #safe-zone { position: absolute; top: 15%; bottom: 35%; left: 5%; right: 25%; pointer-events: none; z-index: 0; }
+        
+        .text-bubble { position: absolute; opacity: 0; color: black; background: white; padding: 6px 12px; border-radius: 16px; font-size: 11px; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.5); animation: textFade 16s ease-in-out infinite; }
+        .bg-icon { position: absolute; opacity: 0; color: white; animation: iconFade 12s ease-in-out infinite; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
+
+        .option-btn { transition: all 0.2s ease; border: 1px solid rgba(255, 255, 255, 0.15); }
+        .option-btn:active, .option-btn.selected { background-color: rgba(255, 255, 255, 0.1); border-color: var(--action-cyan); transform: scale(0.98); }
+
+        /* Loader */
+        .tiktok-loader { width: 50px; height: 50px; border-radius: 50%; display: inline-block; position: relative; animation: rotate 1s linear infinite; }
+        .tiktok-loader::before, .tiktok-loader::after { content: ""; box-sizing: border-box; position: absolute; inset: 0px; border-radius: 50%; border: 4px solid var(--action-cyan); animation: prixClipFix 2s linear infinite ; }
+        .tiktok-loader::after{ border-color: var(--action-red); animation: prixClipFix 2s linear infinite , rotate 0.5s linear infinite reverse; inset: 6px; }
+
+        @keyframes rotate { 0% {transform: rotate(0deg)} 100% {transform: rotate(360deg)} }
+        @keyframes prixClipFix {
+            0%   {clip-path:polygon(50% 50%,0 0,0 0,0 0,0 0,0 0)}
+            25%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 0,100% 0,100% 0)}
+            50%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,100% 100%,100% 100%)}
+            75%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,0 100%,0 100%)}
+            100% {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,0 100%,0 0)}
+        }
+        
+        .mobile-container { max-width: 480px; margin: 0 auto; height: 100dvh; position: relative; overflow-y: auto; overflow-x: hidden; background-color: var(--bg-dark); box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+        ::-webkit-scrollbar { width: 0px; background: transparent; }
+    </style>
+</head>
+<body>
+
+    <div class="mobile-container flex flex-col justify-between" id="app-container">
+        
+        <!-- ZONA SEGURA FONDO CREATIVO -->
+        <div id="safe-zone">
+            <div class="text-bubble top-[5%] left-[5%]" style="animation-delay: 0s;">Quiero vender en TikTok</div>
+            <div class="text-bubble top-[30%] left-[25%]" style="animation-delay: 3.5s;">¿Cómo monetizo mis vistas?</div>
+            <div class="text-bubble top-[55%] left-[5%]" style="animation-delay: 7s;">Necesito automatizar mis ventas</div>
+            <div class="text-bubble top-[75%] left-[25%]" style="animation-delay: 10s;">Llevar tráfico a mi WhatsApp</div>
+            <div class="text-bubble top-[15%] left-[45%]" style="animation-delay: 13s;">¿Cómo cierro más ventas?</div>
+            <div class="text-bubble top-[85%] left-[10%]" style="animation-delay: 15.5s;">De vistas a clientes 🚀</div>
+
+            <div class="bg-icon top-[20%] left-[10%]" style="animation-delay: 1s;"><svg class="w-10 h-10" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg></div>
+            <div class="bg-icon top-[40%] left-[15%]" style="animation-delay: 5s;"><svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg></div>
+            <div class="bg-icon top-[65%] left-[50%]" style="animation-delay: 8s;"><svg class="w-10 h-10" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg></div>
+            <div class="bg-icon top-[10%] left-[65%]" style="animation-delay: 2.5s;"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg></div>
+            <div class="bg-icon top-[50%] left-[70%]" style="animation-delay: 11s;"><svg class="w-7 h-7" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg></div>
+        </div>
+
+        <!-- TOP BAR -->
+        <div class="flex justify-between items-center px-4 py-6 z-10 absolute top-0 w-full" id="top-bar">
+            <div class="text-lg font-bold tracking-wide flex space-x-4 mx-auto drop-shadow-md">
+                <span class="text-gray-400">Siguiendo</span>
+                <span class="text-white border-b-2 border-white pb-1">Para ti</span>
+            </div>
+        </div>
+
+        <!-- BARRA DE PROGRESO -->
+        <div id="progress-container" class="hidden w-full px-4 pt-6 z-20 absolute top-0">
+            <div class="flex space-x-1">
+                <div class="h-1 bg-gray-700 flex-1 rounded-full overflow-hidden"><div id="prog-1" class="h-full bg-[#25F4EE] w-0 transition-all duration-300"></div></div>
+                <div class="h-1 bg-gray-700 flex-1 rounded-full overflow-hidden"><div id="prog-2" class="h-full bg-[#25F4EE] w-0 transition-all duration-300"></div></div>
+                <div class="h-1 bg-gray-700 flex-1 rounded-full overflow-hidden"><div id="prog-3" class="h-full bg-[#25F4EE] w-0 transition-all duration-300"></div></div>
+            </div>
+        </div>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <div class="flex-1 flex flex-col justify-end p-6 z-10 relative" id="main-content">
+            
+            <!-- PANTALLA 0: INICIO -->
+            <div id="screen-start" class="slide-up h-full flex flex-col justify-end pb-4">
+                <div class="absolute right-2 bottom-28 flex flex-col items-center space-y-6 text-white drop-shadow-md z-20">
+                    <div class="flex flex-col items-center">
+                        <div class="w-10 h-10 bg-gray-800 rounded-full border border-white flex items-center justify-center mb-1 overflow-hidden relative">
+                            <svg class="w-8 h-8 text-gray-400 mt-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
+                            <div class="absolute -bottom-1 bg-[#FE2C55] rounded-full w-4 h-4 flex items-center justify-center text-[10px] font-bold border border-black">+</div>
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-center"><svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg><span class="text-xs mt-1 font-semibold">12.4K</span></div>
+                    <div class="flex flex-col items-center"><svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M21.99 4c0-1.1-.89-2-1.99-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4-.01-18z"></path></svg><span class="text-xs mt-1 font-semibold">540</span></div>
+                    <div class="flex flex-col items-center"><svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"></path></svg><span class="text-xs mt-1 font-semibold">1.2K</span></div>
+                </div>
+
+                <div class="w-[85%] bg-black/70 p-5 rounded-xl backdrop-blur-md border border-white/10 z-10">
+                    <!-- COPY EXACTO: GANCHO INICIAL -->
+                    <h1 class="text-xl md:text-2xl font-bold leading-snug mb-3">Test de 2 Minutos: Por qué tus videos solo atraen curiosos que no compran <span class="block text-gray-300 text-lg mt-1 font-semibold">(y el cambio exacto para empezar a vender...)</span></h1>
+                    <button onclick="startTest()" class="w-full bg-[#FE2C55] text-white font-bold py-3.5 rounded shadow-lg active:scale-95 transition-transform mt-4 flex items-center justify-center space-x-2">
+                        <span>Comenzar Diagnóstico</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- PANTALLA 1: PREGUNTA 1 -->
+            <div id="screen-q1" class="hidden fade-in w-full h-full flex-col justify-center pb-10 z-10">
+                <div class="bg-black/80 p-6 rounded-2xl backdrop-blur-md border border-white/10 mt-12">
+                    <h2 class="text-xl md:text-2xl font-bold mb-8 leading-tight">Pregunta 1: Cuando terminas un video muy bueno, ¿qué le pides a la gente que haga?</h2>
+                    <div class="space-y-4">
+                        <button onclick="answer(1, this)" class="option-btn w-full text-left bg-[#1A1A1A] p-5 rounded-lg text-base leading-snug">
+                            A: Que me sigan y le den like
+                        </button>
+                        <button onclick="answer(1, this)" class="option-btn w-full text-left bg-[#1A1A1A] p-5 rounded-lg text-base leading-snug">
+                            B: Que vayan al enlace de mi perfil
+                        </button>
+                        <button onclick="answer(1, this)" class="option-btn w-full text-left bg-[#1A1A1A] p-5 rounded-lg text-base leading-snug">
+                            C: Que comenten una palabra para yo escribirles
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PANTALLA 2: PREGUNTA 2 -->
+            <div id="screen-q2" class="hidden fade-in w-full h-full flex-col justify-center pb-10 z-10">
+                <div class="bg-black/80 p-6 rounded-2xl backdrop-blur-md border border-white/10 mt-12">
+                    <h2 class="text-xl md:text-2xl font-bold mb-8 leading-tight">Pregunta 2: Cuando alguien por fin te pregunta "¿Qué precio tiene?", ¿qué sueles hacer?</h2>
+                    <div class="space-y-4">
+                        <button onclick="answer(2, this)" class="option-btn w-full text-left bg-[#1A1A1A] p-5 rounded-lg text-base leading-snug">
+                            A: Les doy el precio directo para no perder tiempo
+                        </button>
+                        <!-- COPY EXACTO: OPCIÓN B CORREGIDA -->
+                        <button onclick="answer(2, this)" class="option-btn w-full text-left bg-[#1A1A1A] p-5 rounded-lg text-base leading-snug">
+                            B: Les comparto una presentación con toda la información y precios para que tengan todo muy claro antes de decidir.
+                        </button>
+                        <button onclick="answer(2, this)" class="option-btn w-full text-left bg-[#1A1A1A] p-5 rounded-lg text-base leading-snug">
+                            C: Les hago un par de preguntas para entender qué necesitan antes de dar el precio
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PANTALLA 3: PREGUNTA 3 -->
+            <div id="screen-q3" class="hidden fade-in w-full h-full flex-col justify-center pb-10 z-10">
+                <div class="bg-black/80 p-6 rounded-2xl backdrop-blur-md border border-white/10 mt-12">
+                    <h2 class="text-xl md:text-2xl font-bold mb-8 leading-tight">Pregunta 3: Sé honesto... ¿Cómo te sientes cuando un cliente te pide información y luego te deja en visto?</h2>
+                    <div class="space-y-4">
+                        <button onclick="answer(3, this)" class="option-btn w-full text-left bg-[#1A1A1A] p-5 rounded-lg text-base leading-snug">
+                            A: Frustrado, siento que la gente solo quiere cosas gratis
+                        </button>
+                        <button onclick="answer(3, this)" class="option-btn w-full text-left bg-[#1A1A1A] p-5 rounded-lg text-base leading-snug">
+                            B: Siento que tal vez mi servicio está muy caro
+                        </button>
+                        <button onclick="answer(3, this)" class="option-btn w-full text-left bg-[#1A1A1A] p-5 rounded-lg text-base leading-snug">
+                            C: Normal, sé exactamente qué decirles para retomar la plática sin sonar insistente
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PANTALLA 4: CALCULANDO -->
+            <div id="screen-loading" class="hidden fade-in w-full h-full flex-col items-center justify-center pb-20 z-10">
+                <div class="bg-black/90 p-10 rounded-2xl backdrop-blur-md flex flex-col items-center border border-white/10">
+                    <div class="tiktok-loader mb-6"></div>
+                    <h2 class="text-xl font-bold text-center">Calculando tu resultado...</h2>
+                </div>
+            </div>
+
+            <!-- PANTALLA 5: RESULTADO, COPY ÍNTEGRO Y DIAGRAMA -->
+            <div id="screen-result" class="hidden fade-in w-full h-full flex-col justify-start pt-10 pb-8 overflow-y-auto z-10" style="max-height: 100vh;">
+                
+                <div class="bg-[#121212]/95 backdrop-blur-xl rounded-xl p-6 border-l-4 border-[#25F4EE] shadow-2xl relative z-10">
+                    
+                    <!-- DIAGNÓSTICO -->
+                    <h2 class="text-xl font-bold mb-3 text-gray-300">Tu Resultado:</h2>
+                    <p class="text-2xl font-extrabold text-white mb-6 leading-tight">¡Tienes la atención, pero tus ventas se están escapando en el camino! <span class="text-[#FE2C55] text-lg block mt-1">(30% de eficacia)</span></p>
+                    
+                    <div class="space-y-4 text-base text-gray-300 leading-relaxed font-normal">
+                        <p>¡No te desanimes! Tienes lo más difícil a tu favor: estás creando videos y la gente te está viendo. Eso es un gran logro.</p>
+                        
+                        <p>El pequeño problema que el test nos muestra es que estás usando tácticas que alejan a los compradores sin darte cuenta. Por ejemplo, pedirles que "vayan al enlace de tu perfil" es como pedirles que crucen un laberinto solos; a las personas no les gusta buscar. Y cuando les das el precio de inmediato o les mandas mucha información de golpe por mensaje, es muy normal que se asusten, sientan presión y te dejen en visto. No es tu culpa, es lo que a todos nos enseñaron.</p>
+                        
+                        <!-- PREMIO -->
+                        <div class="bg-[#1A1A1A] p-6 rounded-xl mt-8 border border-[#25F4EE] relative shadow-[0_0_15px_rgba(37,244,238,0.15)]">
+                            <div class="absolute inset-0 rounded-xl overflow-hidden pointer-events-none">
+                                <svg class="bg-star top-3 left-4 w-5 h-5" style="animation-delay: 0s;" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                                <svg class="bg-star top-12 right-4 w-8 h-8" style="animation-delay: 1.5s;" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                                <svg class="bg-star bottom-6 left-1/2 w-6 h-6" style="animation-delay: 0.8s;" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                            </div>
+                            
+                            <div class="absolute -top-3 left-4 bg-[#25F4EE] text-black text-[11px] font-extrabold px-3 py-1 rounded-full uppercase tracking-widest shadow-md">🔓 Bonus Desbloqueado</div>
+                            <div class="relative z-10">
+                                <h3 class="text-white font-bold text-lg mb-2 mt-1 drop-shadow-md">El Guion de Cierre de Video</h3>
+                                <p class="mb-4 text-sm leading-snug text-gray-200 drop-shadow-md">Por haber completado este test, has desbloqueado tu primera victoria rápida para que tus próximos videos sí generen prospectos reales.</p>
+                                <div class="bg-black/60 p-4 rounded border-l-4 border-[#FE2C55] text-sm leading-relaxed backdrop-blur-sm">
+                                    <span class="text-gray-400 block mb-2">El error actual es que al final de tu video no les dices de forma sencilla qué hacer para comprarte. Usa esta frase exacta en tu próximo TikTok o Reel:</span>
+                                    <span class="font-bold text-white">"Si quieres resolver [Menciona su Problema], comenta la palabra AYUDA aquí abajo y te digo cómo hacerlo sin presiones".</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- LA BUENA NOTICIA -->
+                        <div class="bg-[#1A1A1A] p-4 rounded-lg mt-6 border border-gray-800">
+                            <h3 class="text-white font-bold text-lg mb-2">La Buena Noticia:</h3>
+                            <p class="mb-3">No necesitas hacer más bailes virales, ni subir tres videos al día, ni rogarle a la gente para que te compre.</p>
+                            <p class="mb-3">Solo necesitas cambiar tu forma de responderles. Imagina tener un sistema inteligente donde tú no persigues a nadie; en lugar de eso, las personas comentan tus videos, reciben la información correcta en automático, y tú solo platicas en WhatsApp con los que ya están listos y emocionados por pagarte.</p>
+                        </div>
+                    </div>
+
+                    <!-- COPY EXACTO MAPA: 👇 Te muestro el mapa exacto... -->
+                    <div class="mt-8 mb-4 bg-black/40 p-4 rounded-2xl border border-white/5 relative overflow-hidden">
+                        <p class="text-center text-[14px] text-gray-300 mb-2 leading-relaxed">
+                            👇 Te muestro <span class="text-white font-bold">el mapa exacto de 6 pasos</span> que aplicamos para cerrar ventas:
+                        </p>
+                        
+                        <!-- DIAGRAMA INTERACTIVO LÁSER -->
+                        <div class="relative w-full h-[340px] mt-10 mb-4">
+                            <!-- Tracks de fondo -->
+                            <div class="absolute top-[15%] left-[25%] w-[50%] border-t-[2px] border-dashed border-white/20 -translate-y-1/2 z-0"></div>
+                            <div class="absolute top-[15%] left-[75%] h-[35%] border-l-[2px] border-dashed border-white/20 -translate-x-1/2 z-0"></div>
+                            <div class="absolute top-[50%] left-[25%] w-[50%] border-t-[2px] border-dashed border-white/20 -translate-y-1/2 z-0"></div>
+                            <div class="absolute top-[50%] left-[25%] h-[35%] border-l-[2px] border-dashed border-white/20 -translate-x-1/2 z-0"></div>
+                            <div class="absolute top-[85%] left-[25%] w-[50%] border-t-[2px] border-dashed border-white/20 -translate-y-1/2 z-0"></div>
+
+                            <!-- Líneas láser animadas -->
+                            <div id="line-1" class="absolute top-[15%] left-[25%] h-[2px] bg-[#25F4EE] transition-all ease-linear w-0 -translate-y-1/2 z-0 shadow-[0_0_8px_#25F4EE]"></div>
+                            <div id="line-2" class="absolute top-[15%] left-[75%] w-[2px] bg-[#25F4EE] transition-all ease-linear h-0 -translate-x-1/2 z-0 shadow-[0_0_8px_#25F4EE]"></div>
+                            <div id="line-3" class="absolute top-[50%] right-[25%] h-[2px] bg-[#25F4EE] transition-all ease-linear w-0 -translate-y-1/2 z-0 shadow-[0_0_8px_#25F4EE]"></div>
+                            <div id="line-4" class="absolute top-[50%] left-[25%] w-[2px] bg-[#25F4EE] transition-all ease-linear h-0 -translate-x-1/2 z-0 shadow-[0_0_8px_#25F4EE]"></div>
+                            <div id="line-5" class="absolute top-[85%] left-[25%] h-[2px] bg-[#25F4EE] transition-all ease-linear w-0 -translate-y-1/2 z-0 shadow-[0_0_8px_#25F4EE]"></div>
+
+                            <!-- PASO 1 -->
+                            <div id="step-1" class="absolute top-[15%] left-[25%] transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center w-20 z-20 cursor-pointer" onclick="runProcess()">
+                                <div id="pop-start" class="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-[#25F4EE] text-black px-3 py-1.5 rounded-full text-[10px] font-extrabold whitespace-nowrap animate-bounce shadow-lg">
+                                    👆 Comienzo de la venta - Presiona aquí
+                                    <div class="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-[#25F4EE] rotate-45"></div>
+                                </div>
+                                <div class="pop-up absolute -top-8 left-1/2 transform -translate-x-1/2 bg-[#25F4EE] text-black px-2 py-1 rounded text-[10px] font-bold whitespace-nowrap opacity-0 transition-all duration-300 scale-50 shadow-md">
+                                    Atracción
+                                    <div class="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-[#25F4EE] rotate-45"></div>
+                                </div>
+                                <div class="icon-bg w-10 h-10 rounded-full bg-gray-900 border-2 border-[#25F4EE] flex items-center justify-center mb-1.5 shadow-[0_0_15px_rgba(37,244,238,0.6)] pulse-cyan transition-all duration-300">
+                                    <svg class="w-5 h-5 text-[#25F4EE]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                                </div>
+                                <span class="step-text text-[10px] font-bold text-[#25F4EE] text-center leading-tight opacity-0 transition-opacity duration-300">1. Atracción</span>
+                            </div>
+
+                            <!-- PASO 2 -->
+                            <div id="step-2" class="absolute top-[15%] left-[75%] transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center w-20 z-10">
+                                <div class="pop-up absolute -top-8 left-1/2 transform -translate-x-1/2 bg-[#25F4EE] text-black px-2 py-1 rounded text-[10px] font-bold whitespace-nowrap opacity-0 transition-all duration-300 scale-50 shadow-md z-20">
+                                    Interés
+                                    <div class="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-[#25F4EE] rotate-45"></div>
+                                </div>
+                                <div class="icon-bg w-10 h-10 rounded-full bg-gray-900 border-2 border-gray-700 flex items-center justify-center mb-1.5 opacity-50 transition-all duration-300">
+                                    <svg class="w-5 h-5 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
+                                </div>
+                                <span class="step-text text-[10px] font-bold text-[#25F4EE] text-center leading-tight opacity-0 transition-opacity duration-300">2. Interés</span>
+                            </div>
+
+                            <!-- PASO 3 -->
+                            <div id="step-3" class="absolute top-[50%] left-[75%] transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center w-24 z-10">
+                                <div class="pop-up absolute -top-8 left-1/2 transform -translate-x-1/2 bg-[#25F4EE] text-black px-2 py-1 rounded text-[10px] font-bold whitespace-nowrap opacity-0 transition-all duration-300 scale-50 shadow-md z-20">
+                                    Filtro Automático
+                                    <div class="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-[#25F4EE] rotate-45"></div>
+                                </div>
+                                <div class="icon-bg w-10 h-10 rounded-full bg-gray-900 border-2 border-gray-700 flex items-center justify-center mb-1.5 opacity-50 transition-all duration-300">
+                                    <svg class="w-5 h-5 text-[#25F4EE]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" /></svg>
+                                </div>
+                                <span class="step-text text-[10px] font-bold text-[#25F4EE] text-center leading-tight opacity-0 transition-opacity duration-300">3. Filtro<br>Silencioso</span>
+                            </div>
+
+                            <!-- PASO 4 -->
+                            <div id="step-4" class="absolute top-[50%] left-[25%] transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center w-20 z-10">
+                                <div class="pop-up absolute -top-8 left-1/2 transform -translate-x-1/2 bg-[#25F4EE] text-black px-2 py-1 rounded text-[10px] font-bold whitespace-nowrap opacity-0 transition-all duration-300 scale-50 shadow-md z-20">
+                                    Conexión 1 a 1
+                                    <div class="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-[#25F4EE] rotate-45"></div>
+                                </div>
+                                <div class="icon-bg w-10 h-10 rounded-full bg-gray-900 border-2 border-gray-700 flex items-center justify-center mb-1.5 opacity-50 transition-all duration-300">
+                                    <svg class="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+                                </div>
+                                <span class="step-text text-[10px] font-bold text-[#25F4EE] text-center leading-tight opacity-0 transition-opacity duration-300">4. Conexión</span>
+                            </div>
+
+                            <!-- PASO 5 -->
+                            <div id="step-5" class="absolute top-[85%] left-[25%] transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center w-20 z-10">
+                                <div class="pop-up absolute -top-8 left-1/2 transform -translate-x-1/2 bg-[#25F4EE] text-black px-2 py-1 rounded text-[10px] font-bold whitespace-nowrap opacity-0 transition-all duration-300 scale-50 shadow-md z-20">
+                                    Presentar Oferta
+                                    <div class="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-[#25F4EE] rotate-45"></div>
+                                </div>
+                                <div class="icon-bg w-10 h-10 rounded-full bg-gray-900 border-2 border-gray-700 flex items-center justify-center mb-1.5 opacity-50 transition-all duration-300">
+                                    <svg class="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" /></svg>
+                                </div>
+                                <span class="step-text text-[10px] font-bold text-[#25F4EE] text-center leading-tight opacity-0 transition-opacity duration-300">5. Oferta</span>
+                            </div>
+
+                            <!-- PASO 6 -->
+                            <div id="step-6" class="absolute top-[85%] left-[75%] transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center w-24 z-10">
+                                <div class="pop-up absolute -top-8 left-1/2 transform -translate-x-1/2 bg-[#FE2C55] text-white px-3 py-1.5 rounded text-[11px] font-extrabold whitespace-nowrap opacity-0 transition-all duration-300 scale-50 shadow-lg z-20">
+                                    ¡Venta Lograda! 🎉
+                                    <div class="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-[#FE2C55] rotate-45"></div>
+                                </div>
+                                <div class="icon-bg w-12 h-12 rounded-full bg-gray-900 border-2 border-gray-700 flex items-center justify-center mb-1.5 opacity-50 transition-all duration-300">
+                                    <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                </div>
+                                <span class="step-text text-[12px] font-extrabold text-[#FE2C55] text-center leading-tight opacity-0 transition-opacity duration-300 drop-shadow-md">6. Venta<br>Lograda</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- COPY EXACTO: SECCIÓN DESCUBRE QUÉ LE HACE FALTA -->
+                    <div class="bg-[#1A1A1A] p-6 rounded-lg mt-6 border border-gray-800 shadow-lg">
+                        <h3 class="text-white font-bold text-lg mb-3">🔍 Descubre qué le hace falta a tu proceso</h3>
+                        <p class="text-[15px] text-gray-300 mb-4 leading-relaxed">Las ventas no caen del cielo ni se cierran "solas" con un bot. Detrás de cada uno de estos 6 pasos hay un trabajo analítico profundo. La dura realidad es que la mayoría de los profesionales no logran cerrar a sus prospectos simplemente porque no tienen un proceso definido.</p>
+                        
+                        <p class="text-[15px] text-gray-300 mb-4 leading-relaxed">Si quieres que hagamos una auditoría rápida <span class="text-[#25F4EE] font-bold">GRATUITA</span> de tu negocio para descubrir exactamente en qué punto se están escapando tus ventas y qué piezas necesitas armar para empezar a cerrar clientes de verdad, agenda una charla de 15 minutos aquí.</p>
+                        
+                        <p class="text-[13px] text-gray-400 italic">Sin presiones y sin compromisos; solo analizaremos tu situación actual para ver si realmente podemos ayudarte a construir el proceso que te falta.</p>
+                    </div>
+
+                    <!-- COPY EXACTO: BOTÓN FINAL DE AGENDA -->
+                    <a href="https://wa.me/524425480329?text=Hola,%20hice%20el%20test%20y%20me%20gustar%C3%ADa%20agendar%20mi%20auditor%C3%ADa%20gratuita." 
+                       target="_blank"
+                       class="mt-6 mb-4 w-full bg-[#25D366] hover:bg-[#20bd5a] text-white font-extrabold py-5 px-4 rounded-full shadow-xl flex items-center justify-center transition-transform active:scale-95 text-[17px] text-center leading-tight relative z-20">
+                        👉 Agendar mi auditoría de 10 minutos
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function hideAll() {
+            const screens = ['screen-start', 'screen-q1', 'screen-q2', 'screen-q3', 'screen-loading', 'screen-result'];
+            screens.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
+        }
+
+        function updateProgress(step) {
+            if (step >= 1 && step <= 3) {
+                const el = document.getElementById('prog-' + step);
+                if (el) el.style.width = '100%';
+            }
+        }
+
+        function startTest() {
+            const topBar = document.getElementById('top-bar');
+            const progCont = document.getElementById('progress-container');
+            const safeZone = document.getElementById('safe-zone');
+            
+            if (topBar) topBar.classList.add('hidden');
+            if (safeZone) safeZone.classList.add('hidden');
+            if (progCont) progCont.classList.remove('hidden');
+            
+            hideAll();
+            const q1 = document.getElementById('screen-q1');
+            if (q1) q1.classList.remove('hidden');
+            updateProgress(1);
+        }
+
+        function answer(currentQuestion, btnElement) {
+            btnElement.classList.add('selected');
+            
+            setTimeout(() => {
+                hideAll();
+                
+                if (currentQuestion === 1) {
+                    const q2 = document.getElementById('screen-q2');
+                    if (q2) q2.classList.remove('hidden');
+                    updateProgress(2);
+                } else if (currentQuestion === 2) {
+                    const q3 = document.getElementById('screen-q3');
+                    if (q3) q3.classList.remove('hidden');
+                    updateProgress(3);
+                } else if (currentQuestion === 3) {
+                    const progCont = document.getElementById('progress-container');
+                    const load = document.getElementById('screen-loading');
+                    if (progCont) progCont.classList.add('hidden');
+                    if (load) load.classList.remove('hidden');
+                    
+                    setTimeout(() => {
+                        hideAll();
+                        const res = document.getElementById('screen-result');
+                        if (res) res.classList.remove('hidden');
+                    }, 2000);
+                }
+            }, 350); 
+        }
+
+        // MOTOR LÁSER DE ANIMACIÓN SECUENCIAL
+        let isProcessRunning = false;
+
+        function drawLine(id, dimension, targetValue, duration) {
+            const line = document.getElementById(id);
+            if(!line) return;
+            line.style.transitionDuration = duration + 'ms';
+            if(dimension === 'width') line.style.width = targetValue;
+            if(dimension === 'height') line.style.height = targetValue;
+        }
+
+        function activateStep(stepId, isFinal) {
+            const el = document.getElementById(stepId);
+            if(!el) return;
+
+            const iconBg = el.querySelector('.icon-bg');
+            const stepText = el.querySelector('.step-text');
+            const popUp = el.querySelector('.pop-up');
+
+            if (iconBg) {
+                iconBg.classList.remove('opacity-50', 'bg-gray-900', 'border-gray-700');
+                iconBg.classList.add('opacity-100', 'bg-black');
+                
+                if (isFinal) { 
+                    iconBg.classList.add('border-[#FE2C55]', 'pulse-red', 'scale-110');
+                    iconBg.querySelector('svg').classList.replace('text-white', 'text-[#FE2C55]');
+                } else {
+                    iconBg.classList.add('border-[#25F4EE]', 'pulse-cyan');
+                    iconBg.querySelector('svg').classList.add('text-[#25F4EE]');
+                }
+            }
+
+            if (stepText) {
+                stepText.classList.remove('opacity-0');
+                stepText.classList.add('opacity-100');
+            }
+
+            if (popUp) {
+                popUp.classList.remove('opacity-0', 'scale-50');
+                popUp.classList.add('opacity-100', 'scale-100', 'animate-bounce');
+                setTimeout(() => popUp.classList.remove('animate-bounce'), 2000);
+            }
+        }
+
+        function runProcess() {
+            if(isProcessRunning) return;
+            isProcessRunning = true;
+
+            const popStart = document.getElementById('pop-start');
+            if(popStart) popStart.style.display = 'none';
+
+            const timeL1 = 1136; 
+            const timeL2 = 795;  
+            const timeL3 = 1136; 
+            const timeL4 = 795;  
+            const timeL5 = 1136; 
+
+            activateStep('step-1', false);
+            drawLine('line-1', 'width', '50%', timeL1);
+
+            setTimeout(() => {
+                activateStep('step-2', false);
+                drawLine('line-2', 'height', '35%', timeL2);
+            }, timeL1);
+
+            setTimeout(() => {
+                activateStep('step-3', false);
+                drawLine('line-3', 'width', '50%', timeL3);
+            }, timeL1 + timeL2);
+
+            setTimeout(() => {
+                activateStep('step-4', false);
+                drawLine('line-4', 'height', '35%', timeL4);
+            }, timeL1 + timeL2 + timeL3);
+
+            setTimeout(() => {
+                activateStep('step-5', false);
+                drawLine('line-5', 'width', '50%', timeL5);
+            }, timeL1 + timeL2 + timeL3 + timeL4);
+
+            setTimeout(() => {
+                activateStep('step-6', true);
+            }, timeL1 + timeL2 + timeL3 + timeL4 + timeL5);
+        }
+    </script>
+</body>
+</html>
