@@ -213,20 +213,32 @@
                 <div class="p-4 flex flex-col relative pb-10">
                     
                     <!-- ENCABEZADO IA FIJO PARA RESULTADOS -->
-                    <div class="sticky top-0 z-50 bg-black/85 backdrop-blur-xl border border-[#25F4EE]/30 rounded-2xl p-3 mb-4 flex items-center gap-3 shadow-[0_4px_15px_rgba(0,0,0,0.5)]">
-                        <div class="relative flex-shrink-0 w-9 h-9">
-                            <div class="w-full h-full rounded-full bg-gradient-to-tr from-[#25F4EE] to-[#01807d] flex items-center justify-center shadow-[0_0_10px_rgba(37,244,238,0.3)] border border-[#25F4EE]/50 relative z-10">
-                                <svg class="w-5 h-5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                    <div class="sticky top-0 z-50 bg-black/85 backdrop-blur-xl border border-[#25F4EE]/30 rounded-2xl p-3 mb-4 flex flex-col gap-3 shadow-[0_4px_15px_rgba(0,0,0,0.5)]">
+                        <div class="flex items-center gap-3">
+                            <div class="relative flex-shrink-0 w-9 h-9">
+                                <div class="w-full h-full rounded-full bg-gradient-to-tr from-[#25F4EE] to-[#01807d] flex items-center justify-center shadow-[0_0_10px_rgba(37,244,238,0.3)] border border-[#25F4EE]/50 relative z-10">
+                                    <svg class="w-5 h-5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                                </div>
+                                <div class="absolute -top-1 -right-1 w-1.5 h-1.5 bg-white rounded-full shadow-[0_0_6px_#fff,0_0_12px_#25F4EE] animate-pulse"></div>
+                                <div class="absolute top-4 -left-1.5 w-1.5 h-1.5 bg-[#25F4EE] rounded-full shadow-[0_0_6px_#25F4EE] animate-ping" style="animation-delay: 0.3s;"></div>
+                                <div class="absolute -bottom-0.5 right-1 w-1.5 h-1.5 bg-white rounded-full shadow-[0_0_6px_#fff,0_0_12px_#25F4EE] animate-pulse" style="animation-delay: 0.7s;"></div>
                             </div>
-                            <div class="absolute -top-1 -right-1 w-1.5 h-1.5 bg-white rounded-full shadow-[0_0_6px_#fff,0_0_12px_#25F4EE] animate-pulse"></div>
-                            <div class="absolute top-4 -left-1.5 w-1.5 h-1.5 bg-[#25F4EE] rounded-full shadow-[0_0_6px_#25F4EE] animate-ping" style="animation-delay: 0.3s;"></div>
-                            <div class="absolute -bottom-0.5 right-1 w-1.5 h-1.5 bg-white rounded-full shadow-[0_0_6px_#fff,0_0_12px_#25F4EE] animate-pulse" style="animation-delay: 0.7s;"></div>
+                            <div class="flex flex-col">
+                                <span class="text-[#25F4EE] font-extrabold text-[13px] tracking-wide">Auditor IA</span>
+                                <span id="ia-status-text" class="text-gray-400 text-[11px] flex items-center gap-1 font-medium">
+                                    Preparando reporte..
+                                </span>
+                            </div>
                         </div>
-                        <div class="flex flex-col">
-                            <span class="text-[#25F4EE] font-extrabold text-[13px] tracking-wide">Auditor IA</span>
-                            <span id="ia-status-text" class="text-gray-400 text-[11px] flex items-center gap-1 font-medium">
-                                Preparando reporte..
-                            </span>
+
+                        <!-- NUEVO MENU DE NAVEGACIÓN (Aparece dinámicamente) -->
+                        <div id="ia-nav-menu" class="hidden flex gap-2 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden" style="scrollbar-width: none;">
+                            <button id="nav-btn-0" onclick="scrollToBlock('res-block-1')" class="hidden opacity-0 transform translate-y-2 transition-all duration-300 bg-black border border-[#25F4EE]/40 hover:bg-[#25F4EE]/10 text-gray-200 text-[11px] font-bold px-3 py-1.5 rounded-xl whitespace-nowrap active:scale-95 shadow-sm">Resultado</button>
+                            <button id="nav-btn-1" onclick="scrollToBlock('res-block-2')" class="hidden opacity-0 transform translate-y-2 transition-all duration-300 bg-black border border-[#25F4EE]/40 hover:bg-[#25F4EE]/10 text-gray-200 text-[11px] font-bold px-3 py-1.5 rounded-xl whitespace-nowrap active:scale-95 shadow-sm">Bono</button>
+                            <button id="nav-btn-2" onclick="scrollToBlock('res-block-3')" class="hidden opacity-0 transform translate-y-2 transition-all duration-300 bg-black border border-[#25F4EE]/40 hover:bg-[#25F4EE]/10 text-gray-200 text-[11px] font-bold px-3 py-1.5 rounded-xl whitespace-nowrap active:scale-95 shadow-sm">Estrategia</button>
+                            <button id="nav-btn-3" onclick="scrollToBlock('res-block-4')" class="hidden opacity-0 transform translate-y-2 transition-all duration-300 bg-black border border-[#25F4EE]/40 hover:bg-[#25F4EE]/10 text-gray-200 text-[11px] font-bold px-3 py-1.5 rounded-xl whitespace-nowrap active:scale-95 shadow-sm">Mapa</button>
+                            <button id="nav-btn-4" onclick="scrollToBlock('res-block-5')" class="hidden opacity-0 transform translate-y-2 transition-all duration-300 bg-black border border-[#25F4EE]/40 hover:bg-[#25F4EE]/10 text-gray-200 text-[11px] font-bold px-3 py-1.5 rounded-xl whitespace-nowrap active:scale-95 shadow-sm">Auditoría</button>
+                            <button id="nav-btn-5" onclick="scrollToBlock('res-block-6')" class="hidden opacity-0 transform translate-y-2 transition-all duration-300 bg-black border border-[#25F4EE]/40 hover:bg-[#25F4EE]/10 text-[#25F4EE] text-[11px] font-bold px-3 py-1.5 rounded-xl whitespace-nowrap active:scale-95 shadow-sm">Agendar</button>
                         </div>
                     </div>
 
@@ -595,6 +607,17 @@
                 setTimeout(() => {
                     const el = document.getElementById(blockId);
                     if(el) el.classList.remove('hidden');
+
+                    // MOSTRAR BOTÓN DE NAVEGACIÓN DINÁMICAMENTE
+                    document.getElementById('ia-nav-menu').classList.remove('hidden');
+                    const navBtn = document.getElementById('nav-btn-' + index);
+                    if(navBtn) {
+                        navBtn.classList.remove('hidden');
+                        setTimeout(() => {
+                            navBtn.classList.remove('opacity-0', 'translate-y-2');
+                            navBtn.classList.add('opacity-100', 'translate-y-0');
+                        }, 50);
+                    }
                     
                     // Auto-Scroll suave para ir bajando conforme aparecen los bloques
                     setTimeout(() => {
@@ -620,6 +643,20 @@
                     }
                 }, delayTotal);
             });
+        }
+
+        // Función de navegación con los botones del menú
+        function scrollToBlock(blockId) {
+            const el = document.getElementById(blockId);
+            const container = document.getElementById('screen-result');
+            if (el && container) {
+                // Compensamos 140px por la altura del encabezado pegajoso para que no tape el contenido
+                const offset = el.offsetTop - 140; 
+                container.scrollTo({
+                    top: offset > 0 ? offset : 0,
+                    behavior: 'smooth'
+                });
+            }
         }
 
         // Función para cambiar el texto según donde esté el usuario haciendo scroll
